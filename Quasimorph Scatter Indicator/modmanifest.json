@@ -3,5 +3,12 @@
   "Assemblies": [
     "Quasimorph_Scatter_Indicator.dll"
   ],
-  "Dependencies": []
+  "Dependencies": [],
+  "SteamTags":
+  [
+	"1.0",
+	"Utility",
+	"UI",
+	"Quality of Life"
+  ]
 }

@@ -1,0 +1,121 @@
+using HarmonyLib;
+using MGSC;
+using System.Collections.Generic;
+using System.Reflection;
+using UnityEngine;
+
+namespace Quasimorph_Scatter_Indicator
+{
+    [HarmonyPatch(typeof(SelectTargetView), "DrawLinearEffectiveRangeLine")]
+    internal static class ScatterIndicatorPatch
+    {
+        private const float DefaultScatterAngleDegrees = 5f;
+        private const float MaxLineLengthInCells = 2f;
+        private const float DotSpacingFactor = 0.18f;
+
+        private static readonly MethodInfo TakeSelectionObjectMethod =
+            AccessTools.Method(typeof(SelectTargetView), "TakeSelectionObject");
+
+        private static void Postfix(SelectTargetView __instance, Vector3 startPos, Vector3 endPos)
+        {
+            if (!IsPreciseShootMode())
+            {
+                return;
+            }
+
+            var traverse = Traverse.Create(__instance);
+            var creatures = traverse.Field("_creatures").GetValue<Creatures>();
+            var mapRenderer = traverse.Field("_mapRenderer").GetValue<MapRenderer>();
+            if (creatures == null || mapRenderer == null)
+            {
+                return;
+            }
+
+            Player player = creatures.Player;
+            BasePickupItem currentWeapon = player?.CreatureData?.Inventory?.CurrentWeapon;
+            WeaponRecord weaponRecord = currentWeapon?.Record<WeaponRecord>();
+            if (currentWeapon == null || weaponRecord == null || weaponRecord.IsMelee
+                || weaponRecord.WeaponClass == WeaponClass.GrenadeLauncher)
+            {
+                return;
+            }
+
+            Vector3 aimDelta = endPos - startPos;
+            if (aimDelta.sqrMagnitude < 0.0001f)
+            {
+                return;
+            }
+
+            float scatterAngle = GetWeaponScatterAngle(player, currentWeapon);
+            float maxLength = MaxLineLengthInCells * mapRenderer.WorldTileSize.x;
+            float dotSpacing = mapRenderer.WorldTileSize.x * DotSpacingFactor;
+            Vector3 aimDirection = aimDelta.normalized;
+
+            DrawScatterLine(__instance, traverse, startPos, aimDirection, scatterAngle, maxLength, dotSpacing);
+            DrawScatterLine(__instance, traverse, startPos, aimDirection, -scatterAngle, maxLength, dotSpacing);
+        }
+
+        private static bool IsPreciseShootMode()
+        {
+            InputController input = SingletonMonoBehaviour<InputController>.Instance;
+            return input != null && input.IsKey("HighlightPreciseShoot");
+        }
+
+        private static float GetWeaponScatterAngle(Player player, BasePickupItem weapon)
+        {
+            try
+            {
+                float scatterAngle = player.CreatureData.GetScatterAngle(weapon);
+                if (scatterAngle > 0f)
+                {
+                    return scatterAngle;
+                }
+            }
+            catch
+            {
+                // Fall back to the conventional default scatter angle.
+            }
+
+            return DefaultScatterAngleDegrees;
+        }
+
+        private static void DrawScatterLine(
+            SelectTargetView view,
+            Traverse viewTraverse,
+            Vector3 origin,
+            Vector3 aimDirection,
+            float angleOffsetDegrees,
+            float maxLength,
+            float dotSpacing)
+        {
+            Vector3 direction = RotateDirection(aimDirection, angleOffsetDegrees);
+            Pool bordersPool = viewTraverse.Field("_bordersPool").GetValue<Pool>();
+            List<GameObject> borders = viewTraverse.Field("_borders").GetValue<List<GameObject>>();
+            Sprite greenDot = viewTraverse.Field("_shootGreenDotSp").GetValue<Sprite>();
+            if (bordersPool == null || borders == null || greenDot == null || TakeSelectionObjectMethod == null)
+            {
+                return;
+            }
+
+            for (float distance = 0f; distance <= maxLength; distance += dotSpacing)
+            {
+                GameObject dot = TakeSelectionObjectMethod.Invoke(view, new object[] { bordersPool }) as GameObject;
+                if (dot == null)
+                {
+                    break;
+                }
+
+                dot.transform.position = origin + direction * distance;
+                dot.GetComponent<SpriteRenderer>().sprite = greenDot;
+                borders.Add(dot);
+            }
+        }
+
+        private static Vector3 RotateDirection(Vector3 direction, float angleDeltaDegrees)
+        {
+            float baseAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            float angle = (baseAngle + angleDeltaDegrees) * Mathf.Deg2Rad;
+            return new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
+        }
+    }
+}
