@@ -1,13 +1,12 @@
 {
-  "UniqueModName": "Stunt_Quasimorph_Scatter_Indicator",
+  "UniqueModName": "Scatter_Indicator",
   "Assemblies": [
-    "Quasimorph_Scatter_Indicator.dll"
+    "Quasimorph Scatter Indicator.dll"
   ],
   "Dependencies": [],
   "SteamTags":
   [
 	"1.0",
-	"Utility",
 	"UI",
 	"Quality of Life"
   ]

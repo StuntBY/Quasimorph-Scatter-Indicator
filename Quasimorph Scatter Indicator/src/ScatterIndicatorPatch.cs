@@ -16,7 +16,7 @@ namespace Quasimorph_Scatter_Indicator
         private static readonly MethodInfo TakeSelectionObjectMethod =
             AccessTools.Method(typeof(SelectTargetView), "TakeSelectionObject");
 
-        private static void Postfix(SelectTargetView __instance, Vector3 startPos, Vector3 endPos)
+        private static void Postfix(SelectTargetView __instance, Vector3 startPos, Vector3 endPos, float effectiveDistanceWorld)
         {
             if (!IsPreciseShootMode())
             {
@@ -53,6 +53,25 @@ namespace Quasimorph_Scatter_Indicator
 
             DrawScatterLine(__instance, traverse, startPos, aimDirection, scatterAngle, maxLength, dotSpacing);
             DrawScatterLine(__instance, traverse, startPos, aimDirection, -scatterAngle, maxLength, dotSpacing);
+
+            float tileSize = mapRenderer.WorldTileSize.x;
+            float targetDistance = aimDelta.magnitude;
+            Vector3 perpendicular = new Vector3(-aimDirection.y, aimDirection.x, 0f);
+
+            if (targetDistance > maxLength)
+            {
+                float spreadOffsetAtTarget = targetDistance * Mathf.Tan(scatterAngle * Mathf.Deg2Rad);
+                DrawScatterDot(__instance, traverse, startPos, endPos + perpendicular * spreadOffsetAtTarget, effectiveDistanceWorld);
+                DrawScatterDot(__instance, traverse, startPos, endPos - perpendicular * spreadOffsetAtTarget, effectiveDistanceWorld);
+            }
+
+            float oneTileSpreadDistance = tileSize / (2f * Mathf.Tan(scatterAngle * Mathf.Deg2Rad));
+            if (oneTileSpreadDistance > maxLength && oneTileSpreadDistance <= targetDistance)
+            {
+                Vector3 oneTilePoint = startPos + aimDirection * oneTileSpreadDistance;
+                DrawScatterDot(__instance, traverse, startPos, oneTilePoint + perpendicular * (tileSize * 0.5f), effectiveDistanceWorld);
+                DrawScatterDot(__instance, traverse, startPos, oneTilePoint - perpendicular * (tileSize * 0.5f), effectiveDistanceWorld);
+            }
         }
 
         private static bool IsPreciseShootMode()
@@ -109,6 +128,35 @@ namespace Quasimorph_Scatter_Indicator
                 dot.GetComponent<SpriteRenderer>().sprite = greenDot;
                 borders.Add(dot);
             }
+        }
+
+        private static void DrawScatterDot(
+            SelectTargetView view,
+            Traverse viewTraverse,
+            Vector3 startPos,
+            Vector3 position,
+            float effectiveDistanceWorld)
+        {
+            Pool bordersPool = viewTraverse.Field("_bordersPool").GetValue<Pool>();
+            List<GameObject> borders = viewTraverse.Field("_borders").GetValue<List<GameObject>>();
+            Sprite greenDot = viewTraverse.Field("_shootGreenDotSp").GetValue<Sprite>();
+            Sprite redDot = viewTraverse.Field("_shootRedDotSp").GetValue<Sprite>();
+            if (bordersPool == null || borders == null || greenDot == null || redDot == null
+                || TakeSelectionObjectMethod == null)
+            {
+                return;
+            }
+
+            GameObject dot = TakeSelectionObjectMethod.Invoke(view, new object[] { bordersPool }) as GameObject;
+            if (dot == null)
+            {
+                return;
+            }
+
+            dot.transform.position = position;
+            SpriteRenderer renderer = dot.GetComponent<SpriteRenderer>();
+            renderer.sprite = Vector3.Distance(startPos, position) <= effectiveDistanceWorld ? greenDot : redDot;
+            borders.Add(dot);
         }
 
         private static Vector3 RotateDirection(Vector3 direction, float angleDeltaDegrees)
