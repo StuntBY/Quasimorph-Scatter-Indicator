@@ -10,7 +10,7 @@ namespace Quasimorph_Scatter_Indicator
     internal static class ScatterIndicatorPatch
     {
         private const float DefaultScatterAngleDegrees = 5f;
-        private const float MaxLineLengthInCells = 2f;
+        private const float MaxLineLengthInCells = 1f;
         private const float DotSpacingFactor = 0.18f;
 
         private static readonly MethodInfo TakeSelectionObjectMethod =
