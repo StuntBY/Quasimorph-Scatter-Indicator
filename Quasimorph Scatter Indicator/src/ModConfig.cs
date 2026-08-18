@@ -13,7 +13,7 @@ namespace Quasimorph_Scatter_Indicator
 {
     public class ModConfig
     {
-        public string SideLinesLengthTiles { get; set; } = "1";
+        public int SideLinesLengthTiles { get; set; } = 1;
         public bool ShowOneTileWidthPair { get; set; } = true;
         public bool ShowCursorTilePair { get; set; } = true;
 

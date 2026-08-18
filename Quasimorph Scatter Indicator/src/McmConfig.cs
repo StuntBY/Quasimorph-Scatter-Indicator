@@ -1,6 +1,5 @@
 using ModConfigMenu;
 using ModConfigMenu.Contracts;
-using ModConfigMenu.Implementations;
 using ModConfigMenu.Objects;
 using System;
 using System.Collections.Generic;
@@ -15,14 +14,15 @@ namespace Quasimorph_Scatter_Indicator
         {
             List<IConfigValue> configData = new List<IConfigValue>
             {
-                new DropdownConfig(
+                new ConfigValue(
                     "SideLinesLengthTiles",
                     Plugin.Config.SideLinesLengthTiles,
                     Header,
-                    Plugin.Config.SideLinesLengthTiles,
-                    "Length of the side scatter lines in tiles. Hide disables the lines.",
+                    1,
+                    "Length of the side scatter lines in tiles. 0 hides the lines.",
                     "Spread Cone Length",
-                    new List<object> { "1", "2", "3", "Hide" }),
+                    0f,
+                    15f),
                 new ConfigValue(
                     "ShowOneTileWidthPair",
                     Plugin.Config.ShowOneTileWidthPair,
@@ -47,7 +47,7 @@ namespace Quasimorph_Scatter_Indicator
             feedbackMessage = string.Empty;
             try
             {
-                Plugin.Config.SideLinesLengthTiles = Convert.ToString(currentConfig["SideLinesLengthTiles"]);
+                Plugin.Config.SideLinesLengthTiles = Convert.ToInt32(currentConfig["SideLinesLengthTiles"]);
                 Plugin.Config.ShowOneTileWidthPair = Convert.ToBoolean(currentConfig["ShowOneTileWidthPair"]);
                 Plugin.Config.ShowCursorTilePair = Convert.ToBoolean(currentConfig["ShowCursorTilePair"]);
                 Plugin.Config.Save(Plugin.ConfigDirectories.ConfigPath);

@@ -46,12 +46,9 @@ namespace Quasimorph_Scatter_Indicator
             }
 
             float scatterAngle = GetWeaponScatterAngle(player, currentWeapon);
-            bool hideConeLines = Plugin.Config?.SideLinesLengthTiles == "Hide";
-            float maxLength = 0f;
-            if (!hideConeLines && int.TryParse(Plugin.Config?.SideLinesLengthTiles, out int sideLinesLengthTiles))
-            {
-                maxLength = sideLinesLengthTiles * mapRenderer.WorldTileSize.x;
-            }
+            int sideLinesLengthTiles = Mathf.Max(0, Plugin.Config?.SideLinesLengthTiles ?? 1);
+            bool hideConeLines = sideLinesLengthTiles <= 0;
+            float maxLength = sideLinesLengthTiles * mapRenderer.WorldTileSize.x;
             float dotSpacing = mapRenderer.WorldTileSize.x * DotSpacingFactor;
             Vector3 aimDirection = aimDelta.normalized;
 
