@@ -11,16 +11,16 @@ namespace Quasimorph_Scatter_Indicator
     {
         private const float DefaultScatterAngleDegrees = 5f;
         private const float DotSpacingFactor = 0.18f;
+        private const int ScatterSortingOrder = 10000;
+
+        internal static readonly HashSet<GameObject> ScatterDots = new HashSet<GameObject>();
 
         private static readonly MethodInfo TakeSelectionObjectMethod =
             AccessTools.Method(typeof(SelectTargetView), "TakeSelectionObject");
 
         private static void Postfix(SelectTargetView __instance, Vector3 startPos, Vector3 endPos, float effectiveDistanceWorld)
         {
-            if (!IsPreciseShootMode())
-            {
-                return;
-            }
+            bool shiftHeld = IsPreciseShootMode();
 
             var traverse = Traverse.Create(__instance);
             var creatures = traverse.Field("_creatures").GetValue<Creatures>();
@@ -39,6 +39,12 @@ namespace Quasimorph_Scatter_Indicator
                 return;
             }
 
+            bool cursorOverEnemy = IsCursorOverEnemy(creatures, mapRenderer, endPos);
+            if (!shiftHeld && !cursorOverEnemy)
+            {
+                return;
+            }
+
             Vector3 aimDelta = endPos - startPos;
             if (aimDelta.sqrMagnitude < 0.0001f)
             {
@@ -52,7 +58,7 @@ namespace Quasimorph_Scatter_Indicator
             float dotSpacing = mapRenderer.WorldTileSize.x * DotSpacingFactor;
             Vector3 aimDirection = aimDelta.normalized;
 
-            if (!hideConeLines)
+            if (shiftHeld && !hideConeLines)
             {
                 DrawScatterLine(__instance, traverse, startPos, aimDirection, scatterAngle, maxLength, dotSpacing);
                 DrawScatterLine(__instance, traverse, startPos, aimDirection, -scatterAngle, maxLength, dotSpacing);
@@ -62,7 +68,8 @@ namespace Quasimorph_Scatter_Indicator
             float targetDistance = aimDelta.magnitude;
             Vector3 perpendicular = new Vector3(-aimDirection.y, aimDirection.x, 0f);
 
-            if ((Plugin.Config == null || Plugin.Config.ShowCursorTilePair) && targetDistance > maxLength)
+            if ((Plugin.Config == null || Plugin.Config.ShowCursorTilePair)
+                && (cursorOverEnemy || (shiftHeld && targetDistance > maxLength)))
             {
                 float spreadOffsetAtTarget = targetDistance * Mathf.Tan(scatterAngle * Mathf.Deg2Rad);
                 DrawScatterDot(__instance, traverse, startPos, endPos + perpendicular * spreadOffsetAtTarget, effectiveDistanceWorld);
@@ -70,7 +77,7 @@ namespace Quasimorph_Scatter_Indicator
             }
 
             float oneTileSpreadDistance = tileSize / (2f * Mathf.Tan(scatterAngle * Mathf.Deg2Rad));
-            if ((Plugin.Config == null || Plugin.Config.ShowOneTileWidthPair) && oneTileSpreadDistance > maxLength && oneTileSpreadDistance <= targetDistance)
+            if (shiftHeld && (Plugin.Config == null || Plugin.Config.ShowOneTileWidthPair) && oneTileSpreadDistance > maxLength && oneTileSpreadDistance <= targetDistance)
             {
                 Vector3 oneTilePoint = startPos + aimDirection * oneTileSpreadDistance;
                 DrawScatterDot(__instance, traverse, startPos, oneTilePoint + perpendicular * (tileSize * 0.5f), effectiveDistanceWorld);
@@ -82,6 +89,13 @@ namespace Quasimorph_Scatter_Indicator
         {
             InputController input = SingletonMonoBehaviour<InputController>.Instance;
             return input != null && input.IsKey("HighlightPreciseShoot");
+        }
+
+        private static bool IsCursorOverEnemy(Creatures creatures, MapRenderer mapRenderer, Vector3 endPos)
+        {
+            mapRenderer.ConvertWorldPosToCell(endPos, out CellPosition cell, out _);
+            Monster monster = creatures.GetMonster(cell.X, cell.Y);
+            return monster != null && !monster.CreatureData.Health.Dead && !monster.IsAlly(creatures.Player);
         }
 
         private static float GetWeaponScatterAngle(Player player, BasePickupItem weapon)
@@ -129,7 +143,10 @@ namespace Quasimorph_Scatter_Indicator
                 }
 
                 dot.transform.position = origin + direction * distance;
-                dot.GetComponent<SpriteRenderer>().sprite = greenDot;
+                SpriteRenderer renderer = dot.GetComponent<SpriteRenderer>();
+                renderer.sprite = greenDot;
+                renderer.sortingOrder = ScatterSortingOrder;
+                ScatterDots.Add(dot);
                 borders.Add(dot);
             }
         }
@@ -160,6 +177,8 @@ namespace Quasimorph_Scatter_Indicator
             dot.transform.position = position;
             SpriteRenderer renderer = dot.GetComponent<SpriteRenderer>();
             renderer.sprite = Vector3.Distance(startPos, position) <= effectiveDistanceWorld ? greenDot : redDot;
+            renderer.sortingOrder = ScatterSortingOrder;
+            ScatterDots.Add(dot);
             borders.Add(dot);
         }
 
@@ -168,6 +187,23 @@ namespace Quasimorph_Scatter_Indicator
             float baseAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             float angle = (baseAngle + angleDeltaDegrees) * Mathf.Deg2Rad;
             return new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
+        }
+    }
+
+    [HarmonyPatch(typeof(SelectTargetView), "FreeBorders")]
+    internal static class ScatterBorderResetPatch
+    {
+        private static void Postfix()
+        {
+            foreach (GameObject dot in ScatterIndicatorPatch.ScatterDots)
+            {
+                if (dot != null && dot.TryGetComponent<SpriteRenderer>(out SpriteRenderer renderer))
+                {
+                    renderer.sortingOrder = 0;
+                }
+            }
+
+            ScatterIndicatorPatch.ScatterDots.Clear();
         }
     }
 }
