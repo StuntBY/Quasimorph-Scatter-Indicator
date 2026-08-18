@@ -46,13 +46,20 @@ namespace Quasimorph_Scatter_Indicator
             }
 
             float scatterAngle = GetWeaponScatterAngle(player, currentWeapon);
-            int sideLinesLengthTiles = Plugin.Config?.SideLinesLengthTiles ?? 1;
-            float maxLength = sideLinesLengthTiles * mapRenderer.WorldTileSize.x;
+            bool hideConeLines = Plugin.Config?.SideLinesLengthTiles == "Hide";
+            float maxLength = 0f;
+            if (!hideConeLines && int.TryParse(Plugin.Config?.SideLinesLengthTiles, out int sideLinesLengthTiles))
+            {
+                maxLength = sideLinesLengthTiles * mapRenderer.WorldTileSize.x;
+            }
             float dotSpacing = mapRenderer.WorldTileSize.x * DotSpacingFactor;
             Vector3 aimDirection = aimDelta.normalized;
 
-            DrawScatterLine(__instance, traverse, startPos, aimDirection, scatterAngle, maxLength, dotSpacing);
-            DrawScatterLine(__instance, traverse, startPos, aimDirection, -scatterAngle, maxLength, dotSpacing);
+            if (!hideConeLines)
+            {
+                DrawScatterLine(__instance, traverse, startPos, aimDirection, scatterAngle, maxLength, dotSpacing);
+                DrawScatterLine(__instance, traverse, startPos, aimDirection, -scatterAngle, maxLength, dotSpacing);
+            }
 
             float tileSize = mapRenderer.WorldTileSize.x;
             float targetDistance = aimDelta.magnitude;

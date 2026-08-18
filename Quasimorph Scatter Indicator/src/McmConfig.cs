@@ -20,23 +20,23 @@ namespace Quasimorph_Scatter_Indicator
                     Plugin.Config.SideLinesLengthTiles,
                     Header,
                     Plugin.Config.SideLinesLengthTiles,
-                    "Length of the side scatter lines in tiles.",
-                    "Side lines length",
-                    new List<object> { 1, 2 }),
+                    "Length of the side scatter lines in tiles. Hide disables the lines.",
+                    "Spread Cone Length",
+                    new List<object> { "1", "2", "3", "Hide" }),
                 new ConfigValue(
                     "ShowOneTileWidthPair",
                     Plugin.Config.ShowOneTileWidthPair,
                     Header,
                     Plugin.Config.ShowOneTileWidthPair,
                     "Show the pair of dots indicating the spread width of one tile.",
-                    "Show one-tile width pair"),
+                    "Show One-Tile width Dots"),
                 new ConfigValue(
                     "ShowCursorTilePair",
                     Plugin.Config.ShowCursorTilePair,
                     Header,
                     Plugin.Config.ShowCursorTilePair,
                     "Show the pair of dots at the target tile.",
-                    "Show target pair"),
+                    "Show Cursor Tile Dots"),
             };
 
             ModConfigMenuAPI.RegisterModConfig("Scatter Indicator", configData, OnConfigSaved);
@@ -47,7 +47,7 @@ namespace Quasimorph_Scatter_Indicator
             feedbackMessage = string.Empty;
             try
             {
-                Plugin.Config.SideLinesLengthTiles = Convert.ToInt32(currentConfig["SideLinesLengthTiles"]);
+                Plugin.Config.SideLinesLengthTiles = Convert.ToString(currentConfig["SideLinesLengthTiles"]);
                 Plugin.Config.ShowOneTileWidthPair = Convert.ToBoolean(currentConfig["ShowOneTileWidthPair"]);
                 Plugin.Config.ShowCursorTilePair = Convert.ToBoolean(currentConfig["ShowCursorTilePair"]);
                 Plugin.Config.Save(Plugin.ConfigDirectories.ConfigPath);
