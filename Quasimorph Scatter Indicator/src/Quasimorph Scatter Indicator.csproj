@@ -37,6 +37,10 @@
 		  <HintPath>..\..\..\..\..\..\..\SteamLibrary\steamapps\common\Quasimorph\Quasimorph_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
 		  <Private>false</Private>
 		</Reference>
+		<Reference Include="MCM">
+		  <HintPath>..\..\..\..\..\..\..\SteamLibrary\steamapps\workshop\content\2059170\3469678797\MCM.dll</HintPath>
+		  <Private>false</Private>
+		</Reference>
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" ExcludeAssets="runtime" />

@@ -10,7 +10,6 @@ namespace Quasimorph_Scatter_Indicator
     internal static class ScatterIndicatorPatch
     {
         private const float DefaultScatterAngleDegrees = 5f;
-        private const float MaxLineLengthInCells = 1f;
         private const float DotSpacingFactor = 0.18f;
 
         private static readonly MethodInfo TakeSelectionObjectMethod =
@@ -47,7 +46,8 @@ namespace Quasimorph_Scatter_Indicator
             }
 
             float scatterAngle = GetWeaponScatterAngle(player, currentWeapon);
-            float maxLength = MaxLineLengthInCells * mapRenderer.WorldTileSize.x;
+            int sideLinesLengthTiles = Plugin.Config?.SideLinesLengthTiles ?? 1;
+            float maxLength = sideLinesLengthTiles * mapRenderer.WorldTileSize.x;
             float dotSpacing = mapRenderer.WorldTileSize.x * DotSpacingFactor;
             Vector3 aimDirection = aimDelta.normalized;
 
@@ -58,7 +58,7 @@ namespace Quasimorph_Scatter_Indicator
             float targetDistance = aimDelta.magnitude;
             Vector3 perpendicular = new Vector3(-aimDirection.y, aimDirection.x, 0f);
 
-            if (targetDistance > maxLength)
+            if ((Plugin.Config == null || Plugin.Config.ShowCursorTilePair) && targetDistance > maxLength)
             {
                 float spreadOffsetAtTarget = targetDistance * Mathf.Tan(scatterAngle * Mathf.Deg2Rad);
                 DrawScatterDot(__instance, traverse, startPos, endPos + perpendicular * spreadOffsetAtTarget, effectiveDistanceWorld);
@@ -66,7 +66,7 @@ namespace Quasimorph_Scatter_Indicator
             }
 
             float oneTileSpreadDistance = tileSize / (2f * Mathf.Tan(scatterAngle * Mathf.Deg2Rad));
-            if (oneTileSpreadDistance > maxLength && oneTileSpreadDistance <= targetDistance)
+            if ((Plugin.Config == null || Plugin.Config.ShowOneTileWidthPair) && oneTileSpreadDistance > maxLength && oneTileSpreadDistance <= targetDistance)
             {
                 Vector3 oneTilePoint = startPos + aimDirection * oneTileSpreadDistance;
                 DrawScatterDot(__instance, traverse, startPos, oneTilePoint + perpendicular * (tileSize * 0.5f), effectiveDistanceWorld);

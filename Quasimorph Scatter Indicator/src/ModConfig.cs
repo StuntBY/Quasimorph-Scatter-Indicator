@@ -13,6 +13,21 @@ namespace Quasimorph_Scatter_Indicator
 {
     public class ModConfig
     {
+        public int SideLinesLengthTiles { get; set; } = 1;
+        public bool ShowOneTileWidthPair { get; set; } = true;
+        public bool ShowCursorTilePair { get; set; } = true;
+
+        public void Save(string configPath)
+        {
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+            };
+
+            string json = JsonConvert.SerializeObject(this, serializerSettings);
+            File.WriteAllText(configPath, json);
+        }
+
         public static ModConfig LoadConfig(string configPath)
         {
             ModConfig config;

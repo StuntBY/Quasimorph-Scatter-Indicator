@@ -28,6 +28,16 @@ namespace Quasimorph_Scatter_Indicator
 
             Config = ModConfig.LoadConfig(ConfigDirectories.ConfigPath);
 
+            try
+            {
+                McmConfig.Register();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning("Mod Configuration Menu is not available. Config menu registration skipped.");
+                Logger.LogException(ex);
+            }
+
             new Harmony("Stunt_" + ConfigDirectories.ModAssemblyName).PatchAll();
         }
 
