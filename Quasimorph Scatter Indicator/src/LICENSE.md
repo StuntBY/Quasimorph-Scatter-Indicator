@@ -1,4 +1,4 @@
-Copyright (c) 2025 Stunt
+Copyright (c) 2026 Stunt
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
