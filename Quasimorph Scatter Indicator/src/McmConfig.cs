@@ -18,7 +18,7 @@ namespace Quasimorph_Scatter_Indicator
                     "SideLinesLengthTiles",
                     Plugin.Config.SideLinesLengthTiles,
                     Header,
-                    1,
+                    2,
                     "Length of the side scatter lines in tiles. 0 hides the lines.",
                     "Spread Cone Length",
                     0f,
