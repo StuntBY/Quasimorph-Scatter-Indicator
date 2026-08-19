@@ -1,5 +1,8 @@
 Copyright (c) 2026 Stunt
 
+Portions of this software are based on the Quasimorph Mod Template
+by RedSpy, which is distributed under the MIT License.
+
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
 "Software"), to deal in the Software without restriction, including

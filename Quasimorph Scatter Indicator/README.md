@@ -1,4 +1,4 @@
-# Quasimorph Quasimorph_Scatter_Indicator
+# Quasimorph Scatter Indicator
 
 ![thumbnail icon](media/thumbnail.png)
 

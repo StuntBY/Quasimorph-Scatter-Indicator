@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Quasimorph_Scatter_Indicator")]
-[assembly: AssemblyCopyright("Copyright © 2025 Stunt")]
+[assembly: AssemblyCopyright("Copyright © 2026 Stunt")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
