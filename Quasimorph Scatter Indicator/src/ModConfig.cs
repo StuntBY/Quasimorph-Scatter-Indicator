@@ -16,6 +16,7 @@ namespace Quasimorph_Scatter_Indicator
         public int SideLinesLengthTiles { get; set; } = 2;
         public bool ShowOneTileWidthPair { get; set; } = true;
         public bool ShowCursorTilePair { get; set; } = true;
+        public bool SmartActivation { get; set; } = true;
 
         public void Save(string configPath)
         {
