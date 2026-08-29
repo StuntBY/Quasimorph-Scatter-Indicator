@@ -23,10 +23,29 @@ namespace Quasimorph_Scatter_Indicator
         public bool SmartActivation { get; set; } = true;
         public int DotSizePercent { get; set; } = 100;
 
-        public static int NormalizeDotSizePercent(int value)
+        public static int ClampDotSizePercent(int value)
         {
-            value = Math.Max(DotSizePercentMin, Math.Min(DotSizePercentMax, value));
+            return Math.Max(DotSizePercentMin, Math.Min(DotSizePercentMax, value));
+        }
+
+        public static int SnapDotSizePercent(int value)
+        {
+            value = ClampDotSizePercent(value);
             return (int)Math.Round((double)value / DotSizePercentStep) * DotSizePercentStep;
+        }
+
+        public const int DotSizeSliderStepMin = 0;
+        public const int DotSizeSliderStepMax = (DotSizePercentMax - DotSizePercentMin) / DotSizePercentStep;
+
+        public static int PercentToSliderStep(int percent)
+        {
+            return (SnapDotSizePercent(percent) - DotSizePercentMin) / DotSizePercentStep;
+        }
+
+        public static int SliderStepToPercent(int step)
+        {
+            step = Math.Max(DotSizeSliderStepMin, Math.Min(DotSizeSliderStepMax, step));
+            return DotSizePercentMin + step * DotSizePercentStep;
         }
 
         public void Save(string configPath)
@@ -56,7 +75,7 @@ namespace Quasimorph_Scatter_Indicator
                     string sourceJson = File.ReadAllText(configPath);
 
                     config = JsonConvert.DeserializeObject<ModConfig>(sourceJson, serializerSettings);
-                    config.DotSizePercent = NormalizeDotSizePercent(config.DotSizePercent);
+                    config.DotSizePercent = SnapDotSizePercent(config.DotSizePercent);
 
                     //Add any new elements that have been added since the last mod version the user had.
                     string upgradeConfig = JsonConvert.SerializeObject(config, serializerSettings);

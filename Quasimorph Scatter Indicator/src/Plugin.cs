@@ -28,9 +28,10 @@ namespace Quasimorph_Scatter_Indicator
 
             Config = ModConfig.LoadConfig(ConfigDirectories.ConfigPath);
 
+            Harmony harmony = new Harmony("Stunt_" + ConfigDirectories.ModAssemblyName);
             try
             {
-                McmConfig.Register();
+                McmConfig.Register(harmony);
             }
             catch (Exception ex)
             {
@@ -38,7 +39,7 @@ namespace Quasimorph_Scatter_Indicator
                 Logger.LogException(ex);
             }
 
-            new Harmony("Stunt_" + ConfigDirectories.ModAssemblyName).PatchAll();
+            harmony.PatchAll();
         }
 
     }

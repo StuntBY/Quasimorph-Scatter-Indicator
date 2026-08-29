@@ -1,3 +1,4 @@
+using HarmonyLib;
 using ModConfigMenu;
 using ModConfigMenu.Contracts;
 using ModConfigMenu.Objects;
@@ -8,9 +9,10 @@ namespace Quasimorph_Scatter_Indicator
 {
     internal static class McmConfig
     {
-        public static void Register()
+        public static void Register(Harmony harmony)
         {
             ModLocalization.Register();
+            McmDotSizeSliderPatch.TryApply(harmony);
 
             List<IConfigValue> configData = new List<IConfigValue>
             {
@@ -46,13 +48,13 @@ namespace Quasimorph_Scatter_Indicator
                     ModLocalization.SmartActivationLabel),
                 new ConfigValue(
                     "DotSizePercent",
-                    ModConfig.NormalizeDotSizePercent(Plugin.Config.DotSizePercent),
+                    ModConfig.PercentToSliderStep(Plugin.Config.DotSizePercent),
                     ModLocalization.ModName,
-                    100,
+                    ModConfig.PercentToSliderStep(100),
                     ModLocalization.DotSizeTooltip,
                     ModLocalization.DotSizeLabel,
-                    ModConfig.DotSizePercentMin,
-                    ModConfig.DotSizePercentMax),
+                    ModConfig.DotSizeSliderStepMin,
+                    ModConfig.DotSizeSliderStepMax),
             };
 
             ModConfigMenuAPI.RegisterModConfig(ModLocalization.ModDisplayName, configData, OnConfigSaved);
@@ -67,8 +69,8 @@ namespace Quasimorph_Scatter_Indicator
                 Plugin.Config.ShowOneTileWidthPair = Convert.ToBoolean(currentConfig["ShowOneTileWidthPair"]);
                 Plugin.Config.ShowCursorTilePair = Convert.ToBoolean(currentConfig["ShowCursorTilePair"]);
                 Plugin.Config.SmartActivation = Convert.ToBoolean(currentConfig["SmartActivation"]);
-                int dotSizePercent = Convert.ToInt32(currentConfig["DotSizePercent"]);
-                Plugin.Config.DotSizePercent = ModConfig.NormalizeDotSizePercent(dotSizePercent);
+                int dotSizeStep = Convert.ToInt32(currentConfig["DotSizePercent"]);
+                Plugin.Config.DotSizePercent = ModConfig.SliderStepToPercent(dotSizeStep);
                 Plugin.Config.Save(Plugin.ConfigDirectories.ConfigPath);
                 return true;
             }
