@@ -39,8 +39,8 @@ namespace Quasimorph_Scatter_Indicator
                 return;
             }
 
-            bool smartActivation = Plugin.Config?.SmartActivation ?? true;
-            bool cursorOverEnemy = smartActivation && IsCursorOverEnemy(creatures, mapRenderer, endPos);
+            bool showOnlyWithShift = Plugin.Config?.ShowOnlyWithShift ?? false;
+            bool cursorOverEnemy = !showOnlyWithShift && IsCursorOverEnemy(creatures, mapRenderer, endPos);
             bool showScatter = shiftHeld || cursorOverEnemy;
             if (!showScatter)
             {
