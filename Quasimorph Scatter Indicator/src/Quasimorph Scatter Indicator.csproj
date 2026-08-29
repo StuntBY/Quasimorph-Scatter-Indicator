@@ -16,7 +16,7 @@
 		<_SteamLibraryPath>$([MSBuild]::GetRegistryValueFromView('HKEY_CURRENT_USER\SOFTWARE\Valve\Steam', 'SteamPath', null, RegistryView.Registry32))</_SteamLibraryPath>
 		<GAME_PATH Condition="!Exists('$(GAME_PATH)') AND '$(_SteamLibraryPath)' != ''">$(_SteamLibraryPath)\steamapps\common\$(GAME_NAME)</GAME_PATH>
 		<GAME_PATH Condition="!Exists('$(GAME_PATH)')">C:\Program Files\Steam\steamapps\common\$(GAME_NAME)</GAME_PATH>
-		<GAME_PATH Condition="!Exists('$(GAME_PATH)')">D:\_Games\SteamGames\steamapps\common\$(GAME_NAME)</GAME_PATH>
+		<GAME_PATH Condition="!Exists('$(GAME_PATH)')">C:\Program Files (x86)\Steam\steamapps\common\$(GAME_NAME)</GAME_PATH>
 		<WorkshopPath>$(GAME_PATH)\..\..\workshop\content\2059170\$(SteamId)\</WorkshopPath>
 		<ManagedPath>$(GAME_PATH)\$(GAME_NAME)_Data\Managed\</ManagedPath>
 		<McmPath>$(GAME_PATH)\..\..\workshop\content\2059170\3469678797\MCM.dll</McmPath>
