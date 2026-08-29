@@ -40,21 +40,12 @@ namespace Quasimorph_Scatter_Indicator
                     ModLocalization.CursorTileTooltip,
                     ModLocalization.CursorTileLabel),
                 new ConfigValue(
-                    "SmartActivation",
-                    Plugin.Config.SmartActivation,
-                    ModLocalization.ModName,
-                    Plugin.Config.SmartActivation,
-                    ModLocalization.SmartActivationTooltip,
-                    ModLocalization.SmartActivationLabel),
-                new ConfigValue(
-                    "DotSizePercent",
-                    ModConfig.PercentToSliderStep(Plugin.Config.DotSizePercent),
-                    ModLocalization.ModName,
-                    ModConfig.PercentToSliderStep(100),
-                    ModLocalization.DotSizeTooltip,
-                    ModLocalization.DotSizeLabel,
-                    ModConfig.DotSizeSliderStepMin,
-                    ModConfig.DotSizeSliderStepMax),
+                    "ShowOnlyWithShift",
+                    Plugin.Config.ShowOnlyWithShift,
+                    Header,
+                    Plugin.Config.ShowOnlyWithShift,
+                    "Show the indicator only while holding Shift. Uncheck to also show it when aiming at an enemy without Shift.",
+                    "Show only with Shift"),
             };
 
             ModConfigMenuAPI.RegisterModConfig(ModLocalization.ModDisplayName, configData, OnConfigSaved);
@@ -68,9 +59,7 @@ namespace Quasimorph_Scatter_Indicator
                 Plugin.Config.SideLinesLengthTiles = Convert.ToInt32(currentConfig["SideLinesLengthTiles"]);
                 Plugin.Config.ShowOneTileWidthPair = Convert.ToBoolean(currentConfig["ShowOneTileWidthPair"]);
                 Plugin.Config.ShowCursorTilePair = Convert.ToBoolean(currentConfig["ShowCursorTilePair"]);
-                Plugin.Config.SmartActivation = Convert.ToBoolean(currentConfig["SmartActivation"]);
-                int dotSizeStep = Convert.ToInt32(currentConfig["DotSizePercent"]);
-                Plugin.Config.DotSizePercent = ModConfig.SliderStepToPercent(dotSizeStep);
+                Plugin.Config.ShowOnlyWithShift = Convert.ToBoolean(currentConfig["ShowOnlyWithShift"]);
                 Plugin.Config.Save(Plugin.ConfigDirectories.ConfigPath);
                 return true;
             }

@@ -20,33 +20,7 @@ namespace Quasimorph_Scatter_Indicator
         public int SideLinesLengthTiles { get; set; } = 2;
         public bool ShowOneTileWidthPair { get; set; } = true;
         public bool ShowCursorTilePair { get; set; } = true;
-        public bool SmartActivation { get; set; } = true;
-        public int DotSizePercent { get; set; } = 100;
-
-        public static int ClampDotSizePercent(int value)
-        {
-            return Math.Max(DotSizePercentMin, Math.Min(DotSizePercentMax, value));
-        }
-
-        public static int SnapDotSizePercent(int value)
-        {
-            value = ClampDotSizePercent(value);
-            return (int)Math.Round((double)value / DotSizePercentStep) * DotSizePercentStep;
-        }
-
-        public const int DotSizeSliderStepMin = 0;
-        public const int DotSizeSliderStepMax = (DotSizePercentMax - DotSizePercentMin) / DotSizePercentStep;
-
-        public static int PercentToSliderStep(int percent)
-        {
-            return (SnapDotSizePercent(percent) - DotSizePercentMin) / DotSizePercentStep;
-        }
-
-        public static int SliderStepToPercent(int step)
-        {
-            step = Math.Max(DotSizeSliderStepMin, Math.Min(DotSizeSliderStepMax, step));
-            return DotSizePercentMin + step * DotSizePercentStep;
-        }
+        public bool ShowOnlyWithShift { get; set; } = false;
 
         public void Save(string configPath)
         {
