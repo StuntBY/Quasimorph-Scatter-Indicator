@@ -17,10 +17,15 @@ namespace Quasimorph_Scatter_Indicator
         public const int DotSizePercentMax = 200;
         public const int DotSizePercentStep = 5;
 
+        public const string DisplayModeNever = "Never";
+        public const string DisplayModeOnlyWithShift = "OnlyWithShift";
+        public const string DisplayModeWithoutShift = "WithoutShift";
+        public const string DisplayModeAlways = "Always";
+
         public int SideLinesLengthTiles { get; set; } = 2;
-        public bool ShowOneTileWidthPair { get; set; } = true;
-        public bool ShowCursorTilePair { get; set; } = true;
-        public bool SmartActivation { get; set; } = true;
+        public string ConeDisplayMode { get; set; } = DisplayModeAlways;
+        public string OneTileWidthMode { get; set; } = DisplayModeAlways;
+        public string CursorTileMode { get; set; } = DisplayModeAlways;
         public int DotSizePercent { get; set; } = 100;
 
         public static int ClampDotSizePercent(int value)

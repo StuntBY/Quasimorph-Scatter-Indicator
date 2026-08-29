@@ -1,6 +1,7 @@
 using HarmonyLib;
 using ModConfigMenu;
 using ModConfigMenu.Contracts;
+using ModConfigMenu.Implementations;
 using ModConfigMenu.Objects;
 using System;
 using System.Collections.Generic;
@@ -25,27 +26,30 @@ namespace Quasimorph_Scatter_Indicator
                     ModLocalization.SideLinesLabel,
                     0f,
                     15f),
-                new ConfigValue(
-                    "ShowOneTileWidthPair",
-                    Plugin.Config.ShowOneTileWidthPair,
+                new DropdownConfig(
+                    "ConeDisplayMode",
+                    ModLocalization.LocalizeMode(Plugin.Config.ConeDisplayMode),
                     ModLocalization.ModName,
-                    Plugin.Config.ShowOneTileWidthPair,
+                    ModLocalization.LocalizeMode(Plugin.Config.ConeDisplayMode),
+                    ModLocalization.ConeTooltip,
+                    ModLocalization.ConeLabel,
+                    BuildModeOptions()),
+                new DropdownConfig(
+                    "OneTileWidthMode",
+                    ModLocalization.LocalizeMode(Plugin.Config.OneTileWidthMode),
+                    ModLocalization.ModName,
+                    ModLocalization.LocalizeMode(Plugin.Config.OneTileWidthMode),
                     ModLocalization.OneTileTooltip,
-                    ModLocalization.OneTileLabel),
-                new ConfigValue(
-                    "ShowCursorTilePair",
-                    Plugin.Config.ShowCursorTilePair,
+                    ModLocalization.OneTileLabel,
+                    BuildModeOptions()),
+                new DropdownConfig(
+                    "CursorTileMode",
+                    ModLocalization.LocalizeMode(Plugin.Config.CursorTileMode),
                     ModLocalization.ModName,
-                    Plugin.Config.ShowCursorTilePair,
+                    ModLocalization.LocalizeMode(Plugin.Config.CursorTileMode),
                     ModLocalization.CursorTileTooltip,
-                    ModLocalization.CursorTileLabel),
-                new ConfigValue(
-                    "SmartActivation",
-                    Plugin.Config.SmartActivation,
-                    ModLocalization.ModName,
-                    Plugin.Config.SmartActivation,
-                    ModLocalization.SmartActivationTooltip,
-                    ModLocalization.SmartActivationLabel),
+                    ModLocalization.CursorTileLabel,
+                    BuildModeOptions()),
                 new ConfigValue(
                     "DotSizePercent",
                     ModConfig.PercentToSliderStep(Plugin.Config.DotSizePercent),
@@ -60,15 +64,26 @@ namespace Quasimorph_Scatter_Indicator
             ModConfigMenuAPI.RegisterModConfig(ModLocalization.ModDisplayName, configData, OnConfigSaved);
         }
 
+        private static List<object> BuildModeOptions()
+        {
+            return new List<object>
+            {
+                ModLocalization.GetText(ModLocalization.ModeNever),
+                ModLocalization.GetText(ModLocalization.ModeOnlyWithShift),
+                ModLocalization.GetText(ModLocalization.ModeWithoutShift),
+                ModLocalization.GetText(ModLocalization.ModeAlways),
+            };
+        }
+
         private static bool OnConfigSaved(Dictionary<string, object> currentConfig, out string feedbackMessage)
         {
             feedbackMessage = string.Empty;
             try
             {
                 Plugin.Config.SideLinesLengthTiles = Convert.ToInt32(currentConfig["SideLinesLengthTiles"]);
-                Plugin.Config.ShowOneTileWidthPair = Convert.ToBoolean(currentConfig["ShowOneTileWidthPair"]);
-                Plugin.Config.ShowCursorTilePair = Convert.ToBoolean(currentConfig["ShowCursorTilePair"]);
-                Plugin.Config.SmartActivation = Convert.ToBoolean(currentConfig["SmartActivation"]);
+                Plugin.Config.ConeDisplayMode = ModLocalization.ResolveModeKey(Convert.ToString(currentConfig["ConeDisplayMode"]));
+                Plugin.Config.OneTileWidthMode = ModLocalization.ResolveModeKey(Convert.ToString(currentConfig["OneTileWidthMode"]));
+                Plugin.Config.CursorTileMode = ModLocalization.ResolveModeKey(Convert.ToString(currentConfig["CursorTileMode"]));
                 int dotSizeStep = Convert.ToInt32(currentConfig["DotSizePercent"]);
                 Plugin.Config.DotSizePercent = ModConfig.SliderStepToPercent(dotSizeStep);
                 Plugin.Config.Save(Plugin.ConfigDirectories.ConfigPath);

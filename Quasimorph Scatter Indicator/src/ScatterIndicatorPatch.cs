@@ -41,10 +41,11 @@ namespace Quasimorph_Scatter_Indicator
                 return;
             }
 
-            bool smartActivation = Plugin.Config?.SmartActivation ?? true;
-            bool cursorOverEnemy = smartActivation && IsCursorOverEnemy(creatures, mapRenderer, endPos);
-            bool showScatter = shiftHeld || cursorOverEnemy;
-            if (!showScatter)
+            bool coneVisible = ModeAllows(Plugin.Config?.ConeDisplayMode, shiftHeld);
+            bool cursorPairVisible = ModeAllows(Plugin.Config?.CursorTileMode, shiftHeld);
+            bool oneTileVisible = ModeAllows(Plugin.Config?.OneTileWidthMode, shiftHeld);
+
+            if (!coneVisible && !cursorPairVisible && !oneTileVisible)
             {
                 return;
             }
@@ -65,10 +66,9 @@ namespace Quasimorph_Scatter_Indicator
             float tileSize = mapRenderer.WorldTileSize.x;
             float targetDistance = aimDelta.magnitude;
             Vector3 perpendicular = new Vector3(-aimDirection.y, aimDirection.x, 0f);
-            bool showCursorTilePair = (Plugin.Config == null || Plugin.Config.ShowCursorTilePair) && showScatter;
 
             float coneDrawLength = maxLength;
-            if (showCursorTilePair && !hideConeLines && targetDistance < maxLength)
+            if (cursorPairVisible && !hideConeLines && targetDistance < maxLength)
             {
                 float cosAngle = Mathf.Cos(Mathf.Abs(scatterAngle) * Mathf.Deg2Rad);
                 if (cosAngle > 0.0001f)
@@ -77,13 +77,13 @@ namespace Quasimorph_Scatter_Indicator
                 }
             }
 
-            if (showScatter && !hideConeLines)
+            if (coneVisible && !hideConeLines)
             {
                 DrawScatterLine(__instance, traverse, startPos, aimDirection, scatterAngle, coneDrawLength, dotSpacing);
                 DrawScatterLine(__instance, traverse, startPos, aimDirection, -scatterAngle, coneDrawLength, dotSpacing);
             }
 
-            if (showCursorTilePair)
+            if (cursorPairVisible)
             {
                 float spreadOffsetAtTarget = targetDistance * Mathf.Tan(scatterAngle * Mathf.Deg2Rad);
                 DrawScatterDot(__instance, traverse, startPos, endPos + perpendicular * spreadOffsetAtTarget, effectiveDistanceWorld);
@@ -91,8 +91,7 @@ namespace Quasimorph_Scatter_Indicator
             }
 
             float oneTileSpreadDistance = tileSize / (2f * Mathf.Tan(scatterAngle * Mathf.Deg2Rad));
-            bool showOneTileWidthPair = showScatter && (Plugin.Config == null || Plugin.Config.ShowOneTileWidthPair);
-            if (showOneTileWidthPair
+            if (oneTileVisible
                 && oneTileSpreadDistance > maxLength
                 && oneTileSpreadDistance <= targetDistance)
             {
@@ -143,17 +142,19 @@ namespace Quasimorph_Scatter_Indicator
             return input != null && input.IsKey("HighlightPreciseShoot");
         }
 
-        private static bool IsCursorOverEnemy(Creatures creatures, MapRenderer mapRenderer, Vector3 endPos)
+        private static bool ModeAllows(string mode, bool shiftHeld)
         {
-            Vector2 tileSize = mapRenderer.WorldTileSize;
-            var cell = new CellPosition(
-                Mathf.RoundToInt((endPos.x - tileSize.x * 0.5f) / tileSize.x),
-                Mathf.RoundToInt((endPos.y - tileSize.y * 0.5f) / tileSize.y));
-
-            Creature creature = creatures.GetCreature(cell);
-            return creature is Monster monster
-                && !monster.CreatureData.Health.Dead
-                && !monster.IsAlly(creatures.Player);
+            switch (mode ?? ModConfig.DisplayModeAlways)
+            {
+                case ModConfig.DisplayModeNever:
+                    return false;
+                case ModConfig.DisplayModeOnlyWithShift:
+                    return shiftHeld;
+                case ModConfig.DisplayModeWithoutShift:
+                    return !shiftHeld;
+                default:
+                    return true;
+            }
         }
 
         private static float GetWeaponScatterAngle(Player player, BasePickupItem weapon)
