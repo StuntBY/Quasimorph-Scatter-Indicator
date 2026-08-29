@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net48</TargetFramework>
 		<OutputType>Library</OutputType>
@@ -63,6 +63,7 @@
 
 	<Target Name="ModBaseItems" AfterTargets="PostBuildEvent">
 		<Copy SourceFiles="../modmanifest.json" DestinationFolder="$(TargetDir)" />
+		<Copy SourceFiles="../localization.json" DestinationFolder="$(TargetDir)" />
 		<Copy SourceFiles="../media/thumbnail.png" DestinationFolder="$(TargetDir)" ContinueOnError="true" />
 	</Target>
 

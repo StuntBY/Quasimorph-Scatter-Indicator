@@ -1,4 +1,4 @@
-﻿using MGSC;
+using MGSC;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -13,10 +13,21 @@ namespace Quasimorph_Scatter_Indicator
 {
     public class ModConfig
     {
+        public const int DotSizePercentMin = 10;
+        public const int DotSizePercentMax = 200;
+        public const int DotSizePercentStep = 5;
+
         public int SideLinesLengthTiles { get; set; } = 2;
         public bool ShowOneTileWidthPair { get; set; } = true;
         public bool ShowCursorTilePair { get; set; } = true;
         public bool SmartActivation { get; set; } = true;
+        public int DotSizePercent { get; set; } = 100;
+
+        public static int NormalizeDotSizePercent(int value)
+        {
+            value = Math.Max(DotSizePercentMin, Math.Min(DotSizePercentMax, value));
+            return (int)Math.Round((double)value / DotSizePercentStep) * DotSizePercentStep;
+        }
 
         public void Save(string configPath)
         {
@@ -45,6 +56,7 @@ namespace Quasimorph_Scatter_Indicator
                     string sourceJson = File.ReadAllText(configPath);
 
                     config = JsonConvert.DeserializeObject<ModConfig>(sourceJson, serializerSettings);
+                    config.DotSizePercent = NormalizeDotSizePercent(config.DotSizePercent);
 
                     //Add any new elements that have been added since the last mod version the user had.
                     string upgradeConfig = JsonConvert.SerializeObject(config, serializerSettings);

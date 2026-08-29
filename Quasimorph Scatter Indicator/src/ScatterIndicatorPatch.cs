@@ -87,6 +87,21 @@ namespace Quasimorph_Scatter_Indicator
             }
         }
 
+        private static float DotScale
+        {
+            get
+            {
+                int percent = Plugin.Config?.DotSizePercent ?? 100;
+                return Mathf.Clamp(percent, 10, 200) / 100f;
+            }
+        }
+
+        private static void ApplyDotScale(GameObject dot)
+        {
+            float scale = DotScale;
+            dot.transform.localScale = new Vector3(scale, scale, 1f);
+        }
+
         private static bool IsPreciseShootMode()
         {
             InputController input = SingletonMonoBehaviour<InputController>.Instance;
@@ -154,6 +169,7 @@ namespace Quasimorph_Scatter_Indicator
                 SpriteRenderer renderer = dot.GetComponent<SpriteRenderer>();
                 renderer.sprite = greenDot;
                 renderer.sortingOrder = ScatterSortingOrder;
+                ApplyDotScale(dot);
                 ScatterDots.Add(dot);
                 borders.Add(dot);
             }
@@ -186,6 +202,7 @@ namespace Quasimorph_Scatter_Indicator
             SpriteRenderer renderer = dot.GetComponent<SpriteRenderer>();
             renderer.sprite = Vector3.Distance(startPos, position) <= effectiveDistanceWorld ? greenDot : redDot;
             renderer.sortingOrder = ScatterSortingOrder;
+            ApplyDotScale(dot);
             ScatterDots.Add(dot);
             borders.Add(dot);
         }
@@ -208,6 +225,7 @@ namespace Quasimorph_Scatter_Indicator
                 if (dot != null && dot.TryGetComponent<SpriteRenderer>(out SpriteRenderer renderer))
                 {
                     renderer.sortingOrder = 0;
+                    dot.transform.localScale = Vector3.one;
                 }
             }
 

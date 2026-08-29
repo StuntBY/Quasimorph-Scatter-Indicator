@@ -44,9 +44,18 @@ namespace Quasimorph_Scatter_Indicator
                     Plugin.Config.SmartActivation,
                     ModLocalization.SmartActivationTooltip,
                     ModLocalization.SmartActivationLabel),
+                new ConfigValue(
+                    "DotSizePercent",
+                    ModConfig.NormalizeDotSizePercent(Plugin.Config.DotSizePercent),
+                    ModLocalization.ModName,
+                    100,
+                    ModLocalization.DotSizeTooltip,
+                    ModLocalization.DotSizeLabel,
+                    ModConfig.DotSizePercentMin,
+                    ModConfig.DotSizePercentMax),
             };
 
-            ModConfigMenuAPI.RegisterModConfig("Scatter Indicator", configData, OnConfigSaved);
+            ModConfigMenuAPI.RegisterModConfig(ModLocalization.ModDisplayName, configData, OnConfigSaved);
         }
 
         private static bool OnConfigSaved(Dictionary<string, object> currentConfig, out string feedbackMessage)
@@ -58,6 +67,8 @@ namespace Quasimorph_Scatter_Indicator
                 Plugin.Config.ShowOneTileWidthPair = Convert.ToBoolean(currentConfig["ShowOneTileWidthPair"]);
                 Plugin.Config.ShowCursorTilePair = Convert.ToBoolean(currentConfig["ShowCursorTilePair"]);
                 Plugin.Config.SmartActivation = Convert.ToBoolean(currentConfig["SmartActivation"]);
+                int dotSizePercent = Convert.ToInt32(currentConfig["DotSizePercent"]);
+                Plugin.Config.DotSizePercent = ModConfig.NormalizeDotSizePercent(dotSizePercent);
                 Plugin.Config.Save(Plugin.ConfigDirectories.ConfigPath);
                 return true;
             }
