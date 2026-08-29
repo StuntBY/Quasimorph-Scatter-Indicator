@@ -8,42 +8,42 @@ namespace Quasimorph_Scatter_Indicator
 {
     internal static class McmConfig
     {
-        private const string Header = "Scatter Indicator";
-
         public static void Register()
         {
+            ModLocalization.Register();
+
             List<IConfigValue> configData = new List<IConfigValue>
             {
                 new ConfigValue(
                     "SideLinesLengthTiles",
                     Plugin.Config.SideLinesLengthTiles,
-                    Header,
+                    ModLocalization.ModName,
                     2,
-                    "Length of the side scatter lines in tiles. 0 hides the lines.",
-                    "Spread Cone Length",
+                    ModLocalization.SideLinesTooltip,
+                    ModLocalization.SideLinesLabel,
                     0f,
                     15f),
                 new ConfigValue(
                     "ShowOneTileWidthPair",
                     Plugin.Config.ShowOneTileWidthPair,
-                    Header,
+                    ModLocalization.ModName,
                     Plugin.Config.ShowOneTileWidthPair,
-                    "Show the pair of dots indicating the spread width of one tile.",
-                    "Show One-Tile width Dots"),
+                    ModLocalization.OneTileTooltip,
+                    ModLocalization.OneTileLabel),
                 new ConfigValue(
                     "ShowCursorTilePair",
                     Plugin.Config.ShowCursorTilePair,
-                    Header,
+                    ModLocalization.ModName,
                     Plugin.Config.ShowCursorTilePair,
-                    "Show the pair of dots at the target tile.",
-                    "Show Cursor Tile Dots"),
+                    ModLocalization.CursorTileTooltip,
+                    ModLocalization.CursorTileLabel),
                 new ConfigValue(
                     "SmartActivation",
                     Plugin.Config.SmartActivation,
-                    Header,
+                    ModLocalization.ModName,
                     Plugin.Config.SmartActivation,
-                    "When enabled, the indicator also appears when aiming at an enemy without holding Shift. Shift always works.",
-                    "Smart Activation"),
+                    ModLocalization.SmartActivationTooltip,
+                    ModLocalization.SmartActivationLabel),
             };
 
             ModConfigMenuAPI.RegisterModConfig("Scatter Indicator", configData, OnConfigSaved);
