@@ -30,6 +30,8 @@ namespace Quasimorph_Scatter_Indicator
                 return;
             }
 
+            ScaleVanillaCenterLineDots(traverse);
+
             Player player = creatures.Player;
             BasePickupItem currentWeapon = player?.CreatureData?.Inventory?.CurrentWeapon;
             WeaponRecord weaponRecord = currentWeapon?.Record<WeaponRecord>();
@@ -60,18 +62,28 @@ namespace Quasimorph_Scatter_Indicator
             float dotSpacing = mapRenderer.WorldTileSize.x * DotSpacingFactor;
             Vector3 aimDirection = aimDelta.normalized;
 
-            if (showScatter && !hideConeLines)
-            {
-                DrawScatterLine(__instance, traverse, startPos, aimDirection, scatterAngle, maxLength, dotSpacing);
-                DrawScatterLine(__instance, traverse, startPos, aimDirection, -scatterAngle, maxLength, dotSpacing);
-            }
-
             float tileSize = mapRenderer.WorldTileSize.x;
             float targetDistance = aimDelta.magnitude;
             Vector3 perpendicular = new Vector3(-aimDirection.y, aimDirection.x, 0f);
+            bool showCursorTilePair = (Plugin.Config == null || Plugin.Config.ShowCursorTilePair) && showScatter;
 
-            if ((Plugin.Config == null || Plugin.Config.ShowCursorTilePair)
-                && (cursorOverEnemy || (shiftHeld && targetDistance > maxLength)))
+            float coneDrawLength = maxLength;
+            if (showCursorTilePair && !hideConeLines && targetDistance < maxLength)
+            {
+                float cosAngle = Mathf.Cos(Mathf.Abs(scatterAngle) * Mathf.Deg2Rad);
+                if (cosAngle > 0.0001f)
+                {
+                    coneDrawLength = Mathf.Min(maxLength, targetDistance / cosAngle);
+                }
+            }
+
+            if (showScatter && !hideConeLines)
+            {
+                DrawScatterLine(__instance, traverse, startPos, aimDirection, scatterAngle, coneDrawLength, dotSpacing);
+                DrawScatterLine(__instance, traverse, startPos, aimDirection, -scatterAngle, coneDrawLength, dotSpacing);
+            }
+
+            if (showCursorTilePair)
             {
                 float spreadOffsetAtTarget = targetDistance * Mathf.Tan(scatterAngle * Mathf.Deg2Rad);
                 DrawScatterDot(__instance, traverse, startPos, endPos + perpendicular * spreadOffsetAtTarget, effectiveDistanceWorld);
@@ -79,7 +91,10 @@ namespace Quasimorph_Scatter_Indicator
             }
 
             float oneTileSpreadDistance = tileSize / (2f * Mathf.Tan(scatterAngle * Mathf.Deg2Rad));
-            if (showScatter && (Plugin.Config == null || Plugin.Config.ShowOneTileWidthPair) && oneTileSpreadDistance > maxLength && oneTileSpreadDistance <= targetDistance)
+            bool showOneTileWidthPair = showScatter && (Plugin.Config == null || Plugin.Config.ShowOneTileWidthPair);
+            if (showOneTileWidthPair
+                && oneTileSpreadDistance > maxLength
+                && oneTileSpreadDistance <= targetDistance)
             {
                 Vector3 oneTilePoint = startPos + aimDirection * oneTileSpreadDistance;
                 DrawScatterDot(__instance, traverse, startPos, oneTilePoint + perpendicular * (tileSize * 0.5f), effectiveDistanceWorld);
@@ -100,6 +115,26 @@ namespace Quasimorph_Scatter_Indicator
         {
             float scale = DotScale;
             dot.transform.localScale = new Vector3(scale, scale, 1f);
+        }
+
+        private static void ScaleVanillaCenterLineDots(Traverse viewTraverse)
+        {
+            List<GameObject> borders = viewTraverse.Field("_borders").GetValue<List<GameObject>>();
+            if (borders == null)
+            {
+                return;
+            }
+
+            foreach (GameObject dot in borders)
+            {
+                if (dot == null || ScatterDots.Contains(dot))
+                {
+                    continue;
+                }
+
+                ApplyDotScale(dot);
+                ScatterDots.Add(dot);
+            }
         }
 
         private static bool IsPreciseShootMode()

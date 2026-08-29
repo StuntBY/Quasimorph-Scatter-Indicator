@@ -130,16 +130,16 @@
     "ChineseSimp": "点大小 (%)"
   },
   "scatter_indicator.dotsize.tooltip": {
-    "EnglishUS": "Scatter dot size as a percentage of the default sprite size.",
-    "Russian": "Размер точек разброса в процентах от стандартного спрайта.",
-    "German": "Größe der Streupunkte in Prozent der Standard-Spritegröße.",
-    "French": "Taille des points de dispersion en pourcentage de la taille par défaut.",
-    "Spanish": "Tamaño de los puntos de dispersión en porcentaje del tamaño predeterminado.",
-    "Polish": "Rozmiar punktów rozrzutu w procentach domyślnego rozmiaru.",
-    "Turkish": "Varsayılan sprite boyutuna göre dağılım noktası boyutu yüzdesi.",
-    "BrazilianPortugal": "Tamanho dos pontos de dispersão em porcentagem do tamanho padrão do sprite.",
-    "Korean": "기본 스프라이트 크기 대비 분산 점 크기(퍼센트).",
-    "Japanese": "デフォルトのスプライトサイズに対する散布点のサイズ（%）。",
-    "ChineseSimp": "散布点大小，相对于默认精灵尺寸的百分比。"
+    "EnglishUS": "Scatter dot size as a percentage of the default sprite size. Also affects the vanilla aim line dots while shooting.",
+    "Russian": "Размер точек разброса в процентах от стандартного спрайта. Меняет и ванильные точки линии прицела при стрельбе.",
+    "German": "Größe der Streupunkte in Prozent der Standard-Spritegröße. Betrifft auch die vanilla-Ziellinienpunkte beim Schießen.",
+    "French": "Taille des points de dispersion en % de la taille par défaut. Modifie aussi les points de la ligne de visée vanilla en tir.",
+    "Spanish": "Tamaño de los puntos de dispersión en % del tamaño predeterminado. También cambia los puntos de la línea de puntería vanilla al disparar.",
+    "Polish": "Rozmiar punktów rozrzutu w % domyślnego rozmiaru. Zmienia też wirtualne punkty linii celowania podczas strzelania.",
+    "Turkish": "Varsayılan sprite boyutuna göre dağılım noktası boyutu (%). Ateş ederken vanilla nişan çizgisi noktalarını da değiştirir.",
+    "BrazilianPortugal": "Tamanho dos pontos de dispersão em % do padrão. Também altera os pontos da linha de mira vanilla ao atirar.",
+    "Korean": "기본 스프라이트 대비 분산 점 크기(%). 사격 시 바닐라 조준선 점 크기도 함께 바뀝니다.",
+    "Japanese": "デフォルトのスプライトサイズに対する散布点のサイズ（%）。射撃中のバニラ照準線の点サイズも変わります。",
+    "ChineseSimp": "散布点大小，为默认精灵尺寸的百分比。射击时也会改变原版瞄准线的点大小。"
   }
 }
