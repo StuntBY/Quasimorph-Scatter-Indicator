@@ -6,7 +6,7 @@
 	</PropertyGroup>
 	<PropertyGroup>
 		<!-- Set this value to your mod's Steam Workhop ID -->
-		<SteamId></SteamId>
+		<SteamId>3785407853</SteamId>
 		<!-- Quasimorph game Steam AppID, used to locate the game install in the registry -->
 		<GAME_STEAM_ID>2059170</GAME_STEAM_ID>
 	</PropertyGroup>
