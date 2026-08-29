@@ -39,8 +39,10 @@ namespace Quasimorph_Scatter_Indicator
                 return;
             }
 
-            bool cursorOverEnemy = IsCursorOverEnemy(creatures, mapRenderer, endPos);
-            if (!shiftHeld && !cursorOverEnemy)
+            bool smartActivation = Plugin.Config?.SmartActivation ?? true;
+            bool cursorOverEnemy = smartActivation && IsCursorOverEnemy(creatures, mapRenderer, endPos);
+            bool showScatter = shiftHeld || cursorOverEnemy;
+            if (!showScatter)
             {
                 return;
             }
@@ -58,7 +60,7 @@ namespace Quasimorph_Scatter_Indicator
             float dotSpacing = mapRenderer.WorldTileSize.x * DotSpacingFactor;
             Vector3 aimDirection = aimDelta.normalized;
 
-            if (shiftHeld && !hideConeLines)
+            if (showScatter && !hideConeLines)
             {
                 DrawScatterLine(__instance, traverse, startPos, aimDirection, scatterAngle, maxLength, dotSpacing);
                 DrawScatterLine(__instance, traverse, startPos, aimDirection, -scatterAngle, maxLength, dotSpacing);
@@ -77,7 +79,7 @@ namespace Quasimorph_Scatter_Indicator
             }
 
             float oneTileSpreadDistance = tileSize / (2f * Mathf.Tan(scatterAngle * Mathf.Deg2Rad));
-            if (shiftHeld && (Plugin.Config == null || Plugin.Config.ShowOneTileWidthPair) && oneTileSpreadDistance > maxLength && oneTileSpreadDistance <= targetDistance)
+            if (showScatter && (Plugin.Config == null || Plugin.Config.ShowOneTileWidthPair) && oneTileSpreadDistance > maxLength && oneTileSpreadDistance <= targetDistance)
             {
                 Vector3 oneTilePoint = startPos + aimDirection * oneTileSpreadDistance;
                 DrawScatterDot(__instance, traverse, startPos, oneTilePoint + perpendicular * (tileSize * 0.5f), effectiveDistanceWorld);
@@ -93,9 +95,15 @@ namespace Quasimorph_Scatter_Indicator
 
         private static bool IsCursorOverEnemy(Creatures creatures, MapRenderer mapRenderer, Vector3 endPos)
         {
-            mapRenderer.ConvertWorldPosToCell(endPos, out CellPosition cell, out _);
-            Monster monster = creatures.GetMonster(cell.X, cell.Y);
-            return monster != null && !monster.CreatureData.Health.Dead && !monster.IsAlly(creatures.Player);
+            Vector2 tileSize = mapRenderer.WorldTileSize;
+            var cell = new CellPosition(
+                Mathf.RoundToInt((endPos.x - tileSize.x * 0.5f) / tileSize.x),
+                Mathf.RoundToInt((endPos.y - tileSize.y * 0.5f) / tileSize.y));
+
+            Creature creature = creatures.GetCreature(cell);
+            return creature is Monster monster
+                && !monster.CreatureData.Health.Dead
+                && !monster.IsAlly(creatures.Player);
         }
 
         private static float GetWeaponScatterAngle(Player player, BasePickupItem weapon)

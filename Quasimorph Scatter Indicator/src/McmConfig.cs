@@ -37,6 +37,13 @@ namespace Quasimorph_Scatter_Indicator
                     Plugin.Config.ShowCursorTilePair,
                     "Show the pair of dots at the target tile.",
                     "Show Cursor Tile Dots"),
+                new ConfigValue(
+                    "SmartActivation",
+                    Plugin.Config.SmartActivation,
+                    Header,
+                    Plugin.Config.SmartActivation,
+                    "When enabled, the indicator also appears when aiming at an enemy without holding Shift. Shift always works.",
+                    "Smart Activation"),
             };
 
             ModConfigMenuAPI.RegisterModConfig("Scatter Indicator", configData, OnConfigSaved);
@@ -50,6 +57,7 @@ namespace Quasimorph_Scatter_Indicator
                 Plugin.Config.SideLinesLengthTiles = Convert.ToInt32(currentConfig["SideLinesLengthTiles"]);
                 Plugin.Config.ShowOneTileWidthPair = Convert.ToBoolean(currentConfig["ShowOneTileWidthPair"]);
                 Plugin.Config.ShowCursorTilePair = Convert.ToBoolean(currentConfig["ShowCursorTilePair"]);
+                Plugin.Config.SmartActivation = Convert.ToBoolean(currentConfig["SmartActivation"]);
                 Plugin.Config.Save(Plugin.ConfigDirectories.ConfigPath);
                 return true;
             }
